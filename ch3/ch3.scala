@@ -53,12 +53,43 @@ object List {
         }
     }
 
+    //dropWhile2(xs) is returning a function, which is called with the argument f (currying). Grouping arguments like this is to assist with type inference. When a function contains multiple arg groups, type info flows from left to right. Since the first argument fixed the type param of A to ?, type annotation isn't necessary for f() when calling.
+    //ie: dropWhile2(xs)(x => x < 4)
+    def dropWhile2[A](list: List[A])(f: A => Boolean): List[A] =
+        list match {
+            case Cons(h, t) if f(h) => dropWhile2(t)(f)
+            case _ => list
+        }
+
         //given List(1,2,3,4), return List(1,2,3)
     def init[A](list: List[A]): List[A] = {
        list match {
             case Nil => Nil
+            case Cons(_, Nil) => Nil
             case Cons(h,t) => Cons(h, init(t))
        }
     }
+
+    def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B) : B =
+        as match {
+            case Nil => z
+            case Cons(x, xs) => f(x, foldRight(xs, z)(f))
+        }
+    
+    def sum2(ns: List[Int]) =
+        foldRight(ns, 0)((x, y) => x + y)
+
+    def product2(ns: List[Double]) =
+        foldRight(ns, 1.0)(_ * _)
+
+    def length[A](as: List[A]): Int =
+        foldRight(as, 0)((x, y) => y + 1)
+    
+    @annotation.tailrec
+    def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B =
+        as match {
+            case Nil => z
+            case Cons(h,t) => foldLeft(t, f(z,h))(f)
+        }
 
 }       
