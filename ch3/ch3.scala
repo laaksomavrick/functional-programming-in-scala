@@ -91,5 +91,12 @@ object List {
             case Nil => z
             case Cons(h,t) => foldLeft(t, f(z,h))(f)
         }
+    
+    def sumFoldLeft(l: List[Int]) =
+        foldLeft(l, 0)((acc, el) => acc + el)
 
+    def reverse[A](l: List[A]): List[A] = 
+        foldLeft(l, List[A]())((acc, h) => Cons(h, acc))
+    
+        
 }       
